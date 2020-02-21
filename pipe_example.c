@@ -4,18 +4,19 @@
 #include <string.h>
 #include <sys/wait.h>
 
+#define BUFSIZE (10)
 int main(int argc, char* argv[])
 {
 	int pipefds[2];
 	pid_t pid;
-	char buf[30];
+	char buf[BUFSIZE];
 
 	//create pipe
 	if(pipe(pipefds) == -1){
 		perror("pipe");
 		exit(EXIT_FAILURE);
 	}
-	memset(buf,0,30);
+	memset(buf,0,BUFSIZE);
 	pid = fork();
 
 	if (pid == 0) {
@@ -23,6 +24,7 @@ int main(int argc, char* argv[])
 		close(pipefds[1]);
 		//child read from the pipe read end until the pipe is empty
 		while(read(pipefds[0], buf, 1)==1){
+      buf[1] = '\0';
 			printf("CHILD read from pipe -- %s\n", buf);
 		}
 		//after finishing reading, child close the read end
